@@ -68,7 +68,7 @@
 
                                 <div class="mt-3 mb-2">
                                     <button (click)="onAddLeaveButtonClick(parkData)"
-                                        class="text-white font-bold font-mono py-2 px-9 rounded bg-amber-600">ADD</button>
+                                        class="text-white font-bold font-mono py-2 px-9 rounded bg-amber-600">Add Leave dates</button>
                                 </div>
                                 <div *ngIf="selectedCard === parkData">
                                     <form [formGroup]="parkForm" (ngSubmit)="onDateSelected()">
