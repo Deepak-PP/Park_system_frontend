@@ -1,0 +1,158 @@
+<div class="bg-cover min-h-screen" style="background-image: url('../../../assets/images/patternbg.jpg');">
+    <div class="relative">
+        <div class="absolute top-0 w-full">
+            <app-navbar></app-navbar>
+        </div>
+        <div class="bg-gray-600 h-96">
+            <div
+                class="text-container absolute top-72 left-16 md:left-1/4 lg:left-1/2 xl:top-64 xl:left-96 p-1 text-white">
+                <p
+                    class="text-4xl sm:text-5xl md:text-6xl pl-11 lg:text-7xl xl:text-7xl xl:pl-48 font-serif font-semibold text-sky-200 text-opacity-80 italic">
+                    Tower P1
+                </p>
+            </div>
+            <img src="../../assets/parkingkpi.jpg" alt="Main Image" class="h-96 w-full object-cover">
+        </div>
+    </div>
+    <div>
+        <p class="text-center font-mono font-semibold text-emerald-200 text-4xl pt-16 underline">Status of Parking slots</p>
+        <div>
+            
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 mt-8 px-4 md:px-12 lg:px-24">
+                <ng-container >
+                    <!-- Loop through agencies and display approved ones -->
+                    <ng-container >
+                        <div *ngFor="let parkData of parkingSlot"
+                            class="bg-white p-4 relative rounded shadow-md max-w-sm custom-h-120 flex flex-col">
+                            <div class="py-7 text-center bg-green-600">
+                                
+                                <p class="text-2xl">{{parkData.slotName}}</p>
+                                <div *ngIf="parkData.tempPerson">
+                                    <p class="text-red-950 font-mono font-semibold">Slot temporarily booked by {{parkData.tempPerson.name}} from {{formatDate(parkData.tempPerson.start_date) }} to
+                                        {{formatDate(parkData.tempPerson.end_date) }}</p>
+                                </div>
+                                <div *ngIf="!(parkData.leaveStartDate&&parkData.leaveEndDate)">
+                                    <p class="text-red-200 font-mono">{{parkData.status}}</p>
+
+                                </div>
+                               
+                                <div *ngIf="parkData.leaveStartDate&&parkData.leaveEndDate">
+                                    <div>
+                                        <p class="text-orange-300 font-mono">This slot is available for parking from {{formatDate(parkData.leaveStartDate) }} to {{formatDate(parkData.leaveEndDate) }}</p>
+
+                                    </div>
+                                    
+
+                                </div>
+                                
+                            </div>
+
+                            <p class="underline">
+                                .........................................................................................
+                            </p>
+                            <div class="p-4">
+                                <p class="text-lg text-red-600 font-semibold">This Slot is being actively occupied by: {{parkData.defaultPerson.name}}</p>
+                                <p class="text-gray-800 font-semibold text-lg underline">Period of Occupance:<br>
+                                <p class="text-violet-800 text-lg">{{formatDate(parkData.defaultPerson.start_date)}} - {{formatDate(parkData.defaultPerson.end_date)}}</p>
+                                <!-- <p class="text-gray-800 font-semibold text-sm underline">Price per person:<br>
+                                <p class="text-gray-800 text-sm">23423423423</p> -->
+                                
+                                
+                                <div class="mt-3 mb-2">
+                                    <button (click)="onAddLeaveButtonClick(parkData)"
+                                        class="text-white font-bold font-mono py-2 px-9 rounded bg-amber-600">ADD</button>
+                                </div>
+                                <div *ngIf="selectedCard === parkData">
+                                    <form [formGroup]="parkForm" (ngSubmit)="onDateSelected()">
+                                    <div>
+                                        <label for="startDate">Start Date:</label>
+                                        <input class="mb-1" type="date" id="startDate"  formControlName="startDate">
+                                        <div *ngIf="parkForm.controls['startDate'].invalid && parkForm.controls['startDate'].touched">
+                                            <p class="text-red-500">Start Date is required.</p>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label for="endDate">End Date:</label>
+                                        <input class="mb-1" type="date" id="endDate"  formControlName="endDate">
+                                        <div *ngIf="parkForm.controls['endDate'].invalid && parkForm.controls['endDate'].touched">
+                                            <p class="text-red-500">End Date is required.</p>
+                                        </div>
+                                    </div>
+                                   
+                                    
+                                    
+                                    <button type="submit"
+                                        class="text-white font-bold font-mono py-2 px-9 rounded bg-amber-600">Confirm</button>
+                                        </form>
+
+                                </div>
+                            <!-- ... (your existing code) ... -->
+                            <div class="mt-3 mb-2" *ngIf="(parkData.leaveStartDate&&parkData.leaveEndDate)">
+                                <div>
+                                    <button (click)="onAddTemporaryPersonButtonClick(parkData)"
+                                        class="text-white font-bold font-mono py-2 px-9 rounded bg-amber-600">Book Temporary Person</button>
+
+                                </div>
+                                
+                            </div>
+
+                            <div *ngIf="selectedCardTemp === parkData">
+                                <form [formGroup]="parkForm" (ngSubmit)="onTemporaryPersonAdd()" >
+                                    <div>
+                                        <label for="tempPersonName">Person Name:</label>
+                                        <input class="mb-1" type="text" id="tempPersonName" formControlName="tempPersonName">
+                                        <div *ngIf="parkForm.controls['tempPersonName'].invalid && parkForm.controls['tempPersonName'].touched">
+                                            <p class="text-red-500">Person Name is required.</p>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label for="startDateTemp">Start Date:</label>
+                                        <input class="mb-1" type="date" id="startDateTemp" formControlName="startDateTemp">
+                                        <div *ngIf="parkForm.controls['startDateTemp'].invalid && parkForm.controls['startDateTemp'].touched">
+                                            <p class="text-red-500">Start Date is required.</p>
+                                        </div>
+                                        <div *ngIf="isInvalidStartDate()">
+                                            <p class="text-red-500">Invalid Start Date. Please select a date within the leave period.</p>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label for="endDateTemp">End Date:</label>
+                                        <input class="mb-1" type="date" id="endDateTemp" formControlName="endDateTemp">
+                                        <div *ngIf="parkForm.controls['endDateTemp'].invalid && parkForm.controls['endDateTemp'].touched">
+                                            <p class="text-red-500">End Date is required.</p>
+                                        </div>
+                                        <div *ngIf="isInvalidEndDate()">
+                                            <p class="text-red-500">Invalid End Date. Please select a date within the leave period.</p>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="text-white font-bold font-mono py-2 px-9 rounded bg-amber-600">Confirm</button>
+                                </form>
+                            </div>
+                            <!-- ... (your existing code) ... -->
+
+                               
+                            </div>
+                        </div>
+                    </ng-container>
+
+                    <!-- Display a message if none of the agencies are approved -->
+                    <!-- <div *ngIf="!atLeastOneAgencyApproved()" class="flex justify-center items-center">
+                        <div class="bg-white p-4 relative rounded shadow-md max-w-sm custom-h-120">
+                            <p class="text-center font-semibold">No services available here</p>
+                        </div>
+                    </div> -->
+                </ng-container>
+
+                <!-- Display a message if there are no agencies -->
+                <!-- <div *ngIf="!requestData.agencies || requestData.agencies.length === 0"
+                    class="flex justify-center items-center">
+                    <div class="bg-white p-4 relative rounded shadow-md max-w-sm custom-h-120">
+                        <p class="text-center font-semibold">No services available</p>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+        <div class="h-14"></div>
+    </div>
+</div>
